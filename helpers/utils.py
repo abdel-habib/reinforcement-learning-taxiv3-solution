@@ -22,7 +22,7 @@ def show_state(step, env, obs, reward):
 def plot_learning(x_values, y_values, legend_title='Penalities per Episode', ylabel='Penalities'):
     '''Helper function to plot the learning curve of an agent.'''
     
-    plt.figure(figsize=(8, 3))
+    plt.figure(figsize=(12, 4))
     
     # Plotting the data
     plt.plot(x_values, y_values, label=legend_title)  # Use legend_title as the label for the plot

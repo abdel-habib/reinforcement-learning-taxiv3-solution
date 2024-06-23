@@ -1,3 +1,6 @@
+import numpy as np
+from .utils import show_state
+
 class Value():
     '''A class representing a value in a reinforcement learning environment. This class is
     used to represent the value of a state or action in an environment.
@@ -34,8 +37,6 @@ class Value():
         return Value(self + (-other.data), (self, other), '-')
 
 
-
-
 class RandomAgent():
     '''An agent that acts randomly by random sampling from the environment's action space.
     
@@ -53,3 +54,91 @@ class RandomAgent():
             
         '''
         return self.env.action_space.sample()
+    
+    # def train(self):
+    #     '''Train the agent in the environment.'''
+    #     pass
+    
+    def test(self):
+        '''Test the agent in the environment.'''
+
+        obs, info  = self.env.reset()
+        show_state(0, self.env, obs, 0)
+
+        terminated, truncated = False, False
+        test_step = 0
+
+        while not terminated and not truncated:
+            action = self.get_action()
+
+            new_obs, reward, terminated, truncated, _ = self.env.step(action)
+            obs = new_obs
+            test_step += 1
+
+            show_state(test_step, self.env, obs, reward)
+
+    
+class QLearningAgent():
+    '''An agent that learns the optimal policy using the Q-learning algorithm.
+    
+    Args:
+        env (gymnasium.Env): The environment to interact with.
+        alpha (float): The learning rate.
+        gamma (float): The discount factor.
+        epsilon (float): The exploration rate.
+        n_episodes (int): The number of episodes to train the agent for.'''
+    
+    def __init__(self, env, alpha=0.1, gamma=0.90, epsilon=0.1, n_episodes=1000):
+        self.env = env
+        self.alpha = alpha
+        self.gamma = gamma
+        self.epsilon = epsilon
+        self.n_episodes = n_episodes
+        self.q_table = np.zeros((env.observation_space.n, env.action_space.n))
+
+    def get_action(self, state):
+        '''Get the action to take in a given state.
+        
+        Args:
+            state (int): The current state of the environment.
+        
+        Returns:
+            action (int): The action to take.'''
+        if np.random.uniform(0, 1) < self.epsilon:
+            return self.env.action_space.sample()       # Exploration
+        else:
+            return np.argmax(self.q_table[state])    # Exploitation
+        
+    def update_q_table(self, state, action, reward, next_state):
+        '''Update the Q-table using the Q-learning algorithm.
+        
+        Args:
+            state (int): The current state of the environment.
+            action (int): The action taken in the current state.
+            reward (int): The reward received from the environment.
+            next_state (int): The next state of the environment.'''
+        
+        self.q_table[state, action] = self.q_table[state, action] + self.alpha * (reward + self.gamma * np.max(self.q_table[next_state]) - self.q_table[state, action])
+
+    # def train(self):
+    #     '''Train the agent using the Q-learning algorithm.'''
+    #     pass
+    
+    def test(self):
+        '''Test the agent in the environment.'''
+        
+        obs, info  = self.env.reset()
+        show_state(0, self.env, obs, 0)
+
+        terminated, truncated = False, False
+        test_step = 0
+
+        while not terminated and not truncated:
+            action = np.argmax(self.q_table[obs])
+            new_obs, reward, terminated, truncated, _ = self.env.step(action)
+            obs = new_obs
+            test_step += 1
+
+            show_state(test_step, self.env, obs, reward)
+
+

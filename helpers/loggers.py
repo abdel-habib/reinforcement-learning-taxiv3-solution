@@ -9,7 +9,3 @@ config = {
     ],
 }
 logger.configure(**config)
-
-
-def testlog():
-    logger.info("Hello, world!")
