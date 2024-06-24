@@ -142,3 +142,75 @@ class QLearningAgent():
             show_state(test_step, self.env, obs, reward)
 
 
+class SARSAAgent():
+    '''An agent that learns the optimal policy using the SARSA algorithm.
+    
+    Args:
+        env (gymnasium.Env): The environment to interact with.
+        alpha (float): The learning rate.
+        gamma (float): The discount factor.
+        epsilon (float): The exploration rate.
+        n_episodes (int): The number of episodes to train the agent for.'''
+    
+    def __init__(self, env, alpha=0.1, gamma=0.90, epsilon=0.1, n_episodes=1000):
+        self.env = env
+        self.alpha = alpha
+        self.gamma = gamma
+        self.epsilon = epsilon
+        self.n_episodes = n_episodes
+        self.q_table = np.zeros((env.observation_space.n, env.action_space.n))
+
+    def get_action(self, state):
+        '''Get the action to take in a given state.
+        
+        Args:
+            state (int): The current state of the environment.
+        
+        Returns:
+            action (int): The action to take.'''
+        if np.random.uniform(0, 1) < self.epsilon:
+            return self.env.action_space.sample()       # Exploration
+        else:
+            return np.argmax(self.q_table[state])       # Exploitation
+        
+    def update_q_table(self, state, action, reward, next_state, next_action):
+        '''Update the Q-table using the SARSA algorithm.
+        
+        Args:
+            state (int): The current state of the environment.
+            action (int): The action taken in the current state.
+            reward (int): The reward received from the environment.
+            next_state (int): The next state of the environment.
+            next_action (int): The action taken in the next state.'''
+        
+        self.q_table[state, action] += self.alpha * (
+            reward + self.gamma * self.q_table[next_state, next_action] - self.q_table[state, action])
+
+    # def train(self):
+    #     '''Train the agent using the SARSA algorithm.'''
+    #     for episode in range(self.n_episodes):
+    #         state, info = self.env.reset()
+    #         action = self.get_action(state)
+    #         terminated, truncated = False, False
+
+    #         while not terminated and not truncated:
+    #             next_state, reward, terminated, truncated, info = self.env.step(action)
+    #             next_action = self.get_action(next_state)
+    #             self.update_q_table(state, action, reward, next_state, next_action)
+    #             state, action = next_state, next_action
+
+    def test(self):
+        '''Test the agent in the environment.'''
+        obs, info = self.env.reset()
+        show_state(0, self.env, obs, 0)
+
+        terminated, truncated = False, False
+        test_step = 0
+
+        while not terminated and not truncated:
+            action = np.argmax(self.q_table[obs])
+            new_obs, reward, terminated, truncated, info = self.env.step(action)
+            obs = new_obs
+            test_step += 1
+
+            show_state(test_step, self.env, obs, reward)
