@@ -46,8 +46,9 @@ class RandomAgent():
     def __init__(self, env):
         self.env = env
 
-    def get_action(self):
-        '''Get a random action from the environment's action space.
+    def get_action(self, state=None):
+        '''Get a random action from the environment's action space. 
+        The state is not necessary in this function, it is only written to standerdise the implementation.
         
         Returns:
             action (int): A random action.
