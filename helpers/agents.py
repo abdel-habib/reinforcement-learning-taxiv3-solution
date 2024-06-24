@@ -1,5 +1,6 @@
 import numpy as np
 from .utils import show_state
+from tqdm import tqdm
 
 class Value():
     '''A class representing a value in a reinforcement learning environment. This class is
@@ -41,10 +42,13 @@ class RandomAgent():
     '''An agent that acts randomly by random sampling from the environment's action space.
     
     Args:
-        env (gymnasium.Env): The environment to interact with.'''
+        env (gymnasium.Env): The environment to interact with.
+        n_episodes (int): The number of episodes to train the agent for.
+        '''
 
-    def __init__(self, env):
+    def __init__(self, env, n_episodes=1000):
         self.env = env
+        self.n_episodes = n_episodes
 
     def get_action(self, state=None):
         '''Get a random action from the environment's action space. 
@@ -56,9 +60,44 @@ class RandomAgent():
         '''
         return self.env.action_space.sample()
     
-    # def train(self):
-    #     '''Train the agent in the environment.'''
-    #     pass
+    def train(self):
+        '''Train the agent in the environment.'''
+        # to keep track of the learning
+        epochs_per_episode = []
+        penalties_per_episode = []
+
+        for episode in tqdm(range(self.n_episodes)):
+            # defining and keeping track of values
+            penalties = Value(data=0, label='penalties')
+            total_rewards = Value(data=0, label='penalties')    
+            epochs = Value(data=0, label='epochs')
+            
+            # both terminated, truncated are returned on every step
+            terminated, truncated = False, False
+            
+            # reset the environment
+            obs, info = self.env.reset()
+
+            # training loop
+            while not terminated or not truncated:
+                # get the action value
+                action = self.get_action(obs)
+
+                # take a step towards the solution
+                obs, reward, terminated, truncated, info = self.env.step(action)
+            
+                # keep track of values
+                total_rewards += reward
+                if reward == -10:
+                    penalties += reward
+                
+                epochs += 1
+
+            epochs_per_episode.append(epochs.data)
+            penalties_per_episode.append(penalties.data)
+
+        return epochs_per_episode, penalties_per_episode
+
     
     def test(self):
         '''Test the agent in the environment.'''
@@ -95,7 +134,7 @@ class QLearningAgent():
         self.gamma = gamma
         self.epsilon = epsilon
         self.n_episodes = n_episodes
-        self.q_table = np.zeros((env.observation_space.n, env.action_space.n))
+        self.q_table = None
 
     def get_action(self, state):
         '''Get the action to take in a given state.
@@ -121,9 +160,51 @@ class QLearningAgent():
         
         self.q_table[state, action] = self.q_table[state, action] + self.alpha * (reward + self.gamma * np.max(self.q_table[next_state]) - self.q_table[state, action])
 
-    # def train(self):
-    #     '''Train the agent using the Q-learning algorithm.'''
-    #     pass
+    def train(self):
+        '''Train the agent using the Q-learning algorithm.'''
+        # initialize the q_table, important to re-init every time we train
+        self.q_table = np.zeros((self.env.observation_space.n, self.env.action_space.n))
+
+        # to keep track of the learning        
+        epochs_per_episode = []
+        penalties_per_episode = []
+
+        for episode in tqdm(range(self.n_episodes)):
+            # defining and keeping track of values
+            penalties = Value(data=0, label='penalties')
+            total_rewards = Value(data=0, label='penalties')    
+            epochs = Value(data=0, label='epochs')
+            
+            # both terminated, truncated are returned on every step
+            terminated, truncated = False, False
+            
+            # reset the environment
+            obs, info = self.env.reset()
+
+            # training loop
+            while not ((terminated) or (truncated)):
+                # get the action value
+                action = self.get_action(obs)
+
+                # take a step towards the solution
+                next_obs, reward, terminated, truncated, info = self.env.step(action)
+
+                # update the agent parameters
+                self.update_q_table(obs, action, reward, next_obs)
+            
+                # keep track of values
+                total_rewards += reward
+                if reward == -10:
+                    penalties += reward #1
+                
+                epochs += 1
+                obs = next_obs # update the next state
+            
+            epochs_per_episode.append(epochs.data)
+            penalties_per_episode.append(penalties.data)
+
+        return epochs_per_episode, penalties_per_episode
+
     
     def test(self):
         '''Test the agent in the environment.'''
@@ -159,7 +240,7 @@ class SARSAAgent():
         self.gamma = gamma
         self.epsilon = epsilon
         self.n_episodes = n_episodes
-        self.q_table = np.zeros((env.observation_space.n, env.action_space.n))
+        self.q_table = None
 
     def get_action(self, state):
         '''Get the action to take in a given state.
@@ -187,18 +268,51 @@ class SARSAAgent():
         self.q_table[state, action] += self.alpha * (
             reward + self.gamma * self.q_table[next_state, next_action] - self.q_table[state, action])
 
-    # def train(self):
-    #     '''Train the agent using the SARSA algorithm.'''
-    #     for episode in range(self.n_episodes):
-    #         state, info = self.env.reset()
-    #         action = self.get_action(state)
-    #         terminated, truncated = False, False
+    def train(self):
+        '''Train the agent using the SARSA algorithm.'''
+        # initialize the q_table, important to re-init every time we train
+        self.q_table = np.zeros((self.env.observation_space.n, self.env.action_space.n))
 
-    #         while not terminated and not truncated:
-    #             next_state, reward, terminated, truncated, info = self.env.step(action)
-    #             next_action = self.get_action(next_state)
-    #             self.update_q_table(state, action, reward, next_state, next_action)
-    #             state, action = next_state, next_action
+        # to keep track of the learning
+        epochs_per_episode = []
+        penalties_per_episode = []
+
+        for episode in tqdm(range(self.n_episodes)):
+            # defining and keeping track of values
+            penalties = Value(data=0, label='penalties')
+            total_rewards = Value(data=0, label='penalties')    
+            epochs = Value(data=0, label='epochs')
+            
+            # both terminated, truncated are returned on every step
+            terminated, truncated = False, False
+            
+            # reset the environment
+            obs, info = self.env.reset() # obs, info
+
+            # training loop
+            while not ((terminated) or (truncated)):
+                # get the action value
+                action = self.get_action(obs)
+
+                # take a step towards the solution
+                next_obs, reward, terminated, truncated, info = self.env.step(action)
+                next_action = self.get_action(next_obs)
+
+                # update the agent parameters
+                self.update_q_table(obs, action, reward, next_obs, next_action)
+            
+                # keep track of values
+                total_rewards += reward
+                if reward == -10:
+                    penalties += reward #1
+                
+                epochs += 1
+                obs, action = next_obs, next_action # update the next state
+            
+            epochs_per_episode.append(epochs.data)
+            penalties_per_episode.append(penalties.data)
+
+        return epochs_per_episode, penalties_per_episode
 
     def test(self):
         '''Test the agent in the environment.'''
