@@ -1,6 +1,8 @@
 import random
 import numpy as np
 import matplotlib.pyplot as plt
+from .loggers import logger
+import os
 
 def show_state(step, env, obs, reward):
     '''Helper function to render the state of the environment and print it to the console.
@@ -19,7 +21,7 @@ def show_state(step, env, obs, reward):
     print(f"Step {step}: {array_state}, Reward: {reward}")
     print(ansi_state)
 
-def plot_learning(x_values, y_values, legend_title='Penalities per Episode', ylabel='Penalities'):
+def plot_learning(x_values, y_values, legend_title='Penalities per Episode', ylabel='Penalities', output_dir = None, file_name='learning_curve.png'):
     '''Helper function to plot the learning curve of an agent.'''
     
     plt.figure(figsize=(12, 4))
@@ -35,8 +37,18 @@ def plot_learning(x_values, y_values, legend_title='Penalities per Episode', yla
     # Display the legend with the specified title
     plt.legend([legend_title])  # Pass legend_title as a list to plt.legend()
 
-    # Display the plot
-    plt.show()
+    if output_dir:
+        # export the plot
+        file_path = os.path.join(output_dir, file_name)
+        plt.savefig(file_path)
+        logger.info(f'Plot saved to {file_path}')
+    else:
+        # Display the plot
+        plt.show()
+
+    # Clear the plot to avoid overlap in case this function is called multiple times
+    plt.clf()
+
 
 
 def seed(seed, env):
