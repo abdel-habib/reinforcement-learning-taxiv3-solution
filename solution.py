@@ -59,4 +59,8 @@ if __name__ == "__main__":
         utils.plot_learning(list(range(1, n_episodes.data + 1)), penalties_per_episode, legend_title='Penalities per Episode', ylabel='Penalities',  output_dir=args.output_dir, file_name=f'{args.algorithm}_learning_curve_penality_per_episode.png')
 
     logger.info("Running test...")
-    agent.test()
+    if (args.algorithm in ["qlearning", "sarsa"]) or (args.algorithm == "random" and args.force_visualize):
+        agent.test()
+    elif args.algorithm == "random" and not args.force_visualize:
+        # random agent will visualize full epochs (default 200), so will spam the terminal, request the user to force visualizing to explain what to expect
+        logger.warning('Random agent will not find a solution, and will iterate for full number of epochs. To visualize the random agent, use the flag `--force_visualize` as an argument while calling the file.')
