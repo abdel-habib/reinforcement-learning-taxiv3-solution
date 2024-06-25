@@ -9,6 +9,7 @@ Table of Contents
    * [Project Setup](#project-setup)
    * [Experimental Notebooks](#experimental-notebooks)
    * [Solution](#solution)
+   * [Results](#results)
 <!--te-->
 
 
@@ -53,13 +54,13 @@ An explanation for the values to pass to each argument is summarized in the foll
 | --output_dir | Optional | Output directory to for the export. The default is `.\outputs` and the folder will be created automatically.  |
 
 
-
-
-
-
-
-
+And thus, an example of running a "qlearning" agent training experiment and exporting its results is shown in the command line below.
 
 ```python
 python solution.py --algorithm "qlearning" --export_results
 ```
+
+Results
+============
+
+After each training session, we tested all of the experiments and recorded the penality per episode and number of epochs per episode. The ideal situation should be less training epochs and less penalities for the trainable epochs. We demonestrate below some of the figures.
