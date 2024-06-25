@@ -50,7 +50,7 @@ if __name__ == "__main__":
         agent = agents.SARSAAgent(env, epsilon = 0.1, n_episodes = n_episodes.data)
 
     # train the agent
-    logger.info(f"Training started for {args.algorithm} agent for {args.n_episodes}...")
+    logger.info(f"Training {args.algorithm} agent for {args.n_episodes}...")
     epochs_per_episode, penalties_per_episode = agent.train()
 
     if args.export_results:

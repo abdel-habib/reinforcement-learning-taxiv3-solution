@@ -99,11 +99,15 @@ class RandomAgent():
         return epochs_per_episode, penalties_per_episode
 
     
-    def test(self):
+    def test(self, visualize = True):
         '''Test the agent in the environment.'''
 
         obs, info  = self.env.reset()
-        show_state(0, self.env, obs, 0)
+
+        if visualize:
+            show_state(0, self.env, obs, 0)
+        
+        total_rewards = 0
 
         terminated, truncated = False, False
         test_step = 0
@@ -115,7 +119,12 @@ class RandomAgent():
             obs = new_obs
             test_step += 1
 
-            show_state(test_step, self.env, obs, reward)
+            total_rewards += reward
+
+            if visualize:
+                show_state(test_step, self.env, obs, reward)
+
+        return test_step, total_rewards
 
     
 class QLearningAgent():
@@ -206,14 +215,18 @@ class QLearningAgent():
         return epochs_per_episode, penalties_per_episode
 
     
-    def test(self):
+    def test(self, visualize = True):
         '''Test the agent in the environment.'''
         
         obs, info  = self.env.reset()
-        show_state(0, self.env, obs, 0)
+
+        if visualize:
+            show_state(0, self.env, obs, 0)
 
         terminated, truncated = False, False
         test_step = 0
+
+        total_rewards = 0
 
         while not terminated and not truncated:
             action = np.argmax(self.q_table[obs])
@@ -221,7 +234,13 @@ class QLearningAgent():
             obs = new_obs
             test_step += 1
 
-            show_state(test_step, self.env, obs, reward)
+            if visualize:
+                show_state(test_step, self.env, obs, reward)
+
+            total_rewards += reward
+
+        return test_step, total_rewards
+
 
 
 class SARSAAgent():
@@ -314,13 +333,17 @@ class SARSAAgent():
 
         return epochs_per_episode, penalties_per_episode
 
-    def test(self):
+    def test(self, visualize = True):
         '''Test the agent in the environment.'''
         obs, info = self.env.reset()
-        show_state(0, self.env, obs, 0)
+
+        if visualize:
+            show_state(0, self.env, obs, 0)
 
         terminated, truncated = False, False
         test_step = 0
+
+        total_rewards = 0
 
         while not terminated and not truncated:
             action = np.argmax(self.q_table[obs])
@@ -328,4 +351,9 @@ class SARSAAgent():
             obs = new_obs
             test_step += 1
 
-            show_state(test_step, self.env, obs, reward)
+            if visualize:
+                show_state(test_step, self.env, obs, reward)
+
+            total_rewards += reward
+
+        return test_step, total_rewards
