@@ -1,6 +1,6 @@
 # <h1 align="center">Taxi V3 Environment Solution using Reinforcement Learning</h1>
 
-This repository contains the code developed for the coding interview task for a Research Engineering role.
+This repository contains the code developed for the coding interview task for a Research Engineering role. We experimented multiple reinforcement learning algorithms and summarised our findings in the figures below, with a detailed description of how to run our solution.
 
 Table of Contents
 =================
@@ -63,4 +63,16 @@ python solution.py --algorithm "qlearning" --export_results
 Results
 ============
 
-After each training session, we tested all of the experiments and recorded the penality per episode and number of epochs per episode. The ideal situation should be less training epochs and less penalities for the trainable epochs. We demonestrate below some of the figures.
+After each training session, we tested all of the experiments and recorded the penality per episode and number of epochs per episode. The ideal situation should be less training epochs and less penalities for the trainable epochs. We demonestrate below some of the results below.
+![](./static/performance-summary.PNG)
+
+We can see that the random agent doesn't learn of improve with more episodes, and results in total random and large penality values for all episodes. The Q-learning agent has a slightly smoother curves and converges faster than the SARSA agent, and requires less trainable epochs.
+
+We also validated those results by comparing both the Q-learning agent and SARSA agent in a separate file on 100 samples, where we train each of the agents, and obtain a q-table for each of them. We then use the obtained q-table to solve 100 sample test cases and averaged the results. To run the evaluation, please run `python evaluate.py` command. We obtained the following output of the performance evaluation.
+
+```python
+             training_time  average training epochs (n=100)  average total rewards
+ql_agent          6.629119                            12.94                   8.06
+sarsa_agent       4.922590                            24.25                  -4.51
+```
+The results also emphasizes that the Q-learning approach performes better when we take into account the average trainable epochs for all episodes, and average total rewards. The rewards can be in negative taking into account the penality obtained, thus the Q-learning agent seems to be a better approach to solve the problem.
