@@ -48,7 +48,7 @@ An explanation for the values to pass to each argument is summarized in the foll
 | -------- | ------- | ------- |
 | --algorithm | Optional | An argument to define which model type to use for training and evaluation. There are three options ["random", "qlearning", "sarsa"]. Option "random" trains a random agent based on random sampling, "qlearning  obtion trains a q-learning agent based on q-learning algorithm, and "sarsa" agent trains a SARSA algorithm. The default value is "qlearning" |
 | --n_episodes | Optional | Number of episodes to run. The default is 10000 |
-| --force_visualize | Optional | This flag is only important if you need to visualize the "random" agent test result. As the random agent never convirges to a solution due to it's random selection, it goes through the full number of epochs (default is 200); thus we set it to never visualize unless this flag is passed. |
+| --force_visualize | Optional | This flag is only important if you need to visualize the "random" agent test result. As the random agent never convirges to a solution due to it's random selection, it goes through the full number of epochs (default is 200); thus we set it to never visualize unless this flag is passed. To visualize, just use the flag `--force_visualize` and it will set to True automatically. |
 | --export_results    | Optional | Exports the learning curves for the agents. By default, this export doesn't occur. To export, just use `--export_results` and it will set it to True automatically |
 | --output_dir | Optional | Output directory to for the export. The default is `.\outputs` and the folder will be created automatically.  |
 

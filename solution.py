@@ -14,7 +14,7 @@ if __name__ == "__main__":
 
     parser.add_argument('--algorithm', type=str, default='qlearning', help='Algorithm to solve the task. Has to be one of ["qlearning", "random", "sarsa"].')
     parser.add_argument('--n_episodes', type=int, default=10000, help='Number of episodes to use for training. Default value is `10000`.')
-    parser.add_argument('--force_visualize', type=bool, default=False, help='visualizing is disabled for random agent solution, as it will fill the command line. \
+    parser.add_argument('--force_visualize', action='store_true', help='visualizing is disabled for random agent solution, as it will fill the command line. \
         To visualze the test simulation of the random agent, set this flag to `True`.')
     parser.add_argument('--export_results', action='store_true', help='Set this flag to `True` when it is necessary to export performance metrics, such as \
         `penality per episode` or `epochs per episode`. This automatically creates an outputs folder, and saves the filename based on the timestamp.')
