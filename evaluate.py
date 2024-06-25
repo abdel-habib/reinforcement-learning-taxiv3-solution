@@ -16,6 +16,7 @@ if __name__ == "__main__":
     # define fixed values or parameters for all models
     n_episodes = agents.Value(data=10000, label='n_Episodes')
     env = gym.make("Taxi-v3", render_mode="ansi")
+    utils.seed(42, env)
 
     # here we load the agents we want to evaluate, we don't load the random agent as we know that randomness doesn't converge to a solution
     ql_agent = agents.QLearningAgent(env, epsilon = 0.1, n_episodes = n_episodes.data)
